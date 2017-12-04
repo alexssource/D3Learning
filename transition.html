@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Introduction</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+<h3>Transition</h3>
+
+<p>Transition - это спецэффекты, например чтобы когда меняем свойства визуально отображалась анимация</p>
+
+<script>
+    
+    var canvas = d3.select('body')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 500)
+        .style('border', '1px solid #000');
+
+    
+    var circle = canvas.append('circle')
+        .attr('cx', 50)
+        .attr('cy', 50)
+        .attr('r', 25);
+
+
+    circle
+        .transition()   // делаем transition сдвиг вправо
+            .duration(1500)     // двигаться вправо будет 1.5 секунды
+            .delay(2000)        // подождет 2 секунды, потом начнет двигаться
+            .attr('cx', 150)
+        .transition()   // еще один transition на сдвиг вниз
+            .duration(2000)
+            .attr('cy', 150)
+        .transition()   // возврат на исходную
+            .duration(2000)
+            .attr('cx', 50)
+            .attr('cy', 50)
+            .on("end", function() {   // event listener, когда transition завершится, сработает этот обработчик
+                d3.select(this)         // выборка текущего circle
+                    .attr('fill', 'red');
+                console.log('moved back');
+            });
+        
+
+</script>
+
+</body>
+</html>

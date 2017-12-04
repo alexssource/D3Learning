@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Introduction</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+<h3>Tree</h3>
+
+<p>Отображение дерева</p>
+
+<script>
+    
+    var data = {
+        "name": "Eve",
+        "children": [
+            {
+                "name": "Cain"
+            },
+            {
+                "name": "Seth",
+                "children": [
+                    {
+                        "name": "Enos"
+                    },
+                    {
+                        "name": "Noam"
+                    }
+                ]
+            },
+            {
+                "name": "Abel"
+            },
+            {
+                "name": "Awan",
+                "children": [
+                    {
+                        "name": "Enoch"
+                    }
+                ]
+            },
+            {
+                "name": "Azura"
+            }
+        ]
+    };
+
+
+
+
+
+    // 1. SIMPLE CURVE LINE
+
+    var canvas1 = d3.select('body')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 500)
+        .style('border', '1px solid #000');
+
+    /**
+     * Рисует красивую кривую линию из т.А в т.Б
+     * @param d
+     */
+    function diagonalCurve(d) {
+        return "M" + d.source.y + "," + d.source.x
+            + "C" + (d.source.y + d.target.y) / 2 + "," + d.source.x
+            + " " + (d.source.y + d.target.y) / 2 + "," + d.target.x
+            + " " + d.target.y + "," + d.target.x;
+    }
+
+    var diagonalData = {
+        source: { x: 10, y: 10 },
+        target: { x: 300, y: 300 }
+    };
+
+    var diagonal1 = diagonalCurve(diagonalData);
+
+    canvas1.append('path')
+        .attr('fill', 'none')
+        .attr('stroke', 'black')
+        .attr('d', diagonal1);
+
+
+
+
+    // 2. TREE Visualization
+
+    var canvas2 = d3.select('body')
+        .append('svg')
+        .attr('width', 800)
+        .attr('height', 800)
+        .style('border', '1px solid #000')
+        .attr('transform', 'translate(100, 0)')
+        .append('g')
+            .attr('transform', 'translate(50, 50)');
+
+
+    // Set the dimensions and margins of the diagram
+    var margin2 = {top: 10, right: 10, bottom: 50, left: 10},
+          w2 = 660 - margin2.left - margin2.right,
+          h2 = 500 - margin2.top - margin2.bottom;
+
+    // appends a 'group' element to 'svg'
+    // moves the 'group' element to the top left margin
+    var g2 = canvas2.append('g')
+        .attr('transform',
+              'translate(' + margin2.left + ',' + margin2.top + ')');
+
+    // declares a tree layout and assigns the size
+    var tree2 = d3.tree()
+      .size([w2, h2]);
+
+    // Assigns parent
+    var nodes2 = d3.hierarchy(data);
+
+     // Assigns the x and y position for the nodes
+    nodes2 = tree2(nodes2);
+
+    // adds the links between the nodes
+    var link2 = g2.selectAll(".link")
+        .data(nodes2.descendants().slice(1))
+        .enter()
+        .append("path")
+          .attr("class", "link")
+          .attr("d", (d) => {
+            return "M" + d.x + "," + d.y
+              + "C" + d.x + "," + (d.y + d.parent.y) / 2
+              + " " + d.parent.x + "," +  (d.y + d.parent.y) / 2
+              + " " + d.parent.x + "," + d.parent.y;
+          })
+          .attr('fill', 'none')
+          .attr('stroke', '#ccc')
+          .attr('stroke-width', 2);
+
+    // adds each node as a group
+    var node2 = g2.selectAll('.node')
+      .data(nodes2.descendants())
+      .enter()
+      .append('g')
+        .attr('class', (d) => {
+          return "node" +
+            (d.children ? " node--internal" : " node--leaf"); })
+        .attr("transform", (d) => "translate(" + d.x + "," + d.y + ")" );
+
+    // adds the circle to the node
+    node2.append('circle')
+      .attr('r', 10)
+      .attr('fill', 'steelblue');
+
+    // adds the text to the node
+    node2.append("text")
+      .attr("dy", 3)
+      .attr("y", (d) => d.children ? -20 : 20 )
+      .style("text-anchor", (d) =>  d.children ? "end" : "start" )
+      .text((d) => d.data.name );
+
+</script>
+
+</body>
+</html>

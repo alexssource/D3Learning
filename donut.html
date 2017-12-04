@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Introduction</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+<h3>Donut - круговой график, Arc - часть дуги</h3>
+
+<p>Path - технология, позволяющая рисовать произвольные фигуры</p>
+
+<script>
+
+    // 1. SIMPLE CIRCLE 
+
+    var canvas1 = d3.select('body')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 500)
+        .style('border', '1px solid #000');
+
+    var group1 = canvas1.append("g")
+        .attr('transform', 'translate(100, 100)');
+
+    var r1 = 100;
+    var p1 = Math.PI * 2;
+
+    var arc1 = d3.arc()
+            .innerRadius(r1 - 20)
+            .outerRadius(r1)
+            .startAngle(0)  // in radians
+            .endAngle(p1 - 1)    // remove 1 radian from the circle
+        ;
+
+    group1.append('path')
+        .attr('d', arc1);
+
+
+
+
+    // 2. DONUT CHART
+
+    var color2 = d3
+        .scaleOrdinal()     // ordinal значит что будет не число (цвета)
+        .range(['red', 'blue', 'orange']);
+
+    var canvas2 = d3.select('body')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 500)
+        .style('border', '1px solid #000')
+        .attr('transform', 'translate(100, 0)');
+
+    var data2 = [10, 50, 80];
+    var r2 = 150;
+
+    var group2 = canvas2.append("g")
+        .attr('transform', 'translate(200, 200)');
+
+    var arc2 = d3.arc()
+        .innerRadius(100)
+        .outerRadius(r2);
+
+    var pie2 = d3.pie()  // fills the startAngle, endAngle based on data
+        .value(function (d) { return d; });
+
+    var arcs2 = group2.selectAll('.arc')
+        .data(pie2(data2))
+        .enter()
+        .append('g')
+        .attr('class', 'arc');
+
+    arcs2.append('path')
+        .attr('d', arc2)
+        .attr('fill', function (d) { return color2(d.data); });
+
+    arcs2.append('text')
+        .attr('transform', function (d) { return 'translate(' + arc2.centroid(d) + ')'; }) // put labels in the center of дуги
+        .attr('text-anchor', 'middle')
+        .attr('font-size', '1.5em')
+        .text(function(d) { return d.data; });
+
+
+</script>
+
+</body>
+</html>

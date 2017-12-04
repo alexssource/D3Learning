@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Introduction</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+<p>Методы enter, exit, update выступают в роли методов collection intersection, следующий за ними код применяется к срезу от этих методов</p>
+
+DOM elements < data elements (enter)<br/>
+DOM elements > data elements (exit)<br/>
+DOM elements = data elements (update)<br/>
+
+<script>
+
+    // 1. ENTER case
+    var data1 = [100, 200, 300];
+    var canvas1 = d3.select('body')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 500)
+        .style('border', '1px solid #000');
+
+    // это будет DOM circle
+    var circle1_1 = canvas1.append('circle')
+        .attr('cx', 50)
+        .attr('cy', 50) // data1[0]
+        .attr('r', 25);
+
+    var circles = canvas1.selectAll('circle')
+        .data(data1)
+        .attr('fill', 'green') // применится ко всем элементам DOM (т.е. в данном случае к circle1_1)
+        .enter() // весь код ниже применится к __НЕ__ DOM элементам!
+            .append('circle')   // добавятся элементы 200, 300
+            .attr('cx', 50)
+            .attr('cy', function(d) { return d; }) // применится к 200, 300, т.к. 100 уже есть это элемент DOM он не применится
+            .attr('r', 25)
+            .attr('fill', 'red');
+
+
+
+
+    // 2. UPDATE case
+    var data2 = [100, 200, 300];
+
+    var canvas2 = d3.select('body')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 500)
+        .attr('transform', 'translate(100, 0)') // сдвиг вправо на 100пх от canvas1
+        .style('border', '1px solid #000');
+
+    // это будет DOM circle
+    var circle2_1 = canvas2.append('circle')
+        .attr('cx', 50)
+        .attr('cy', data2[0])
+        .attr('r', 25)
+        .attr('fill', 'black');
+
+    // это будет DOM circle
+    var circle2_2 = canvas2.append('circle')
+        .attr('cx', 50)
+        .attr('cy', data2[1])
+        .attr('r', 25)
+        .attr('fill', 'black');
+
+    // это будет DOM circle
+    var circle2_3 = canvas2.append('circle')
+        .attr('cx', 50)
+        .attr('cy', data2[2])
+        .attr('r', 25)
+        .attr('fill', 'black');
+
+    canvas2.selectAll('circle')
+        .data(data2)
+        .attr('fill', 'green');     // применится ко всем, т.к. кол-во DOM=data2.size
+
+
+
+
+    // 3. EXIT case
+    var data3 = [100, 200];
+    var canvas3 = d3.select('body')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 500)
+        .attr('transform', 'translate(200, 0)') // сдвиг вправо от canvas2
+        .style('border', '1px solid #000');
+
+    // это будет DOM circle
+    var circle3_1 = canvas3.append('circle')
+        .attr('cx', 50)
+        .attr('cy', data3[0])
+        .attr('r', 25)
+        .attr('fill', 'black');
+
+    // это будет DOM circle
+    var circle3_2 = canvas3.append('circle')
+        .attr('cx', 50)
+        .attr('cy', data3[1])
+        .attr('r', 25)
+        .attr('fill', 'black');
+
+    // это будет DOM circle
+    var circle3_3 = canvas3.append('circle')
+        .attr('cx', 50)
+        .attr('cy', 300)    // захардкоджено, в коллекции только 2 элемента
+        .attr('r', 25)
+        .attr('fill', 'black');
+
+    canvas3.selectAll('circle')
+        .attr('fill', 'yellow') // применяется ко всем
+        .data(data3)
+            .attr('fill', 'orange') // применяется к первым двум, это UPDATE
+            .exit()
+                .attr('fill', 'green')  // применяется к третьему, т.к. его нету в коллекции, но есть в DOM, это EXIT
+        ;
+
+</script>
+
+</body>
+</html>
